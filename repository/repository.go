@@ -6,17 +6,18 @@ import (
 	"platzi.com/go/rest-ws/models"
 )
 
-type UserRepository interface {
+type Repository interface {
 	InsertUser(ctx context.Context, user *models.User) error
 	GetUserByID(ctx context.Context, id string) (*models.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	//UpdateUser(ctx context.Context, user *models.User) error
+	InsertPost(ctx context.Context, post *models.Post) error
 	Close() error
 }
 
-var implementation UserRepository
+var implementation Repository
 
-func SetRepository(repository UserRepository) {
+func SetRepository(repository Repository) {
 	implementation = repository
 }
 
@@ -30,6 +31,22 @@ func GetUserByID(ctx context.Context, id string) (*models.User, error) {
 func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	return implementation.GetUserByEmail(ctx, email)
 }
+
+func InsertPost(ctx context.Context, post *models.Post) error {
+	return implementation.InsertPost(ctx, post)
+}
+
+// func DeletePost(ctx context.Context, id string) error {
+// 	return implementation.DeletePost(ctx, id)
+// }
+
+// func UpdatePost(ctx context.Context, post *models.Post, userId string) error {
+// 	return implementation.UpdatePost(ctx, post, userId)
+// }
+
+// func ListPost(ctx context.Context, userId string) ([]*models.Post, error) {
+// 	return implementation.ListPost(ctx, userId)
+// }
 
 /*
 func UpdateUser(ctx context.Context, user *models.User) error {
