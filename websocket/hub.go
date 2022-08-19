@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"sync"
@@ -53,7 +54,6 @@ func (hub *Hub) onDisconnect(client *Client) {
 	client.Close()
 	hub.mutex.Lock()
 	defer hub.mutex.Unlock()
-
 	i := -1
 	for j, c := range hub.clients {
 		if c.id == client.id {
@@ -78,4 +78,13 @@ func (hub *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	hub.register <- client
 
 	go client.Write()
+}
+
+func (hub *Hub) Broadcast(message interface{}, ignore *Client) {
+	data, _ := json.Marshal(message)
+	for _, client := range hub.clients {
+		if client != ignore {
+			client.outbound <- data
+		}
+	}
 }
