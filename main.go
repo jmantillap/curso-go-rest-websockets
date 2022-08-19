@@ -11,6 +11,7 @@ import (
 	"platzi.com/go/rest-ws/handlers"
 	"platzi.com/go/rest-ws/middleware"
 	"platzi.com/go/rest-ws/server"
+	"platzi.com/go/rest-ws/websocket"
 )
 
 func main() {
@@ -38,6 +39,8 @@ func main() {
 
 func BindRoutes(s server.Server, r *mux.Router) {
 
+	hub := websocket.NewHub()
+
 	//api := r.PathPrefix("/api/v1").Subrouter()
 
 	r.Use(middleware.CheckAuthMiddleware(s))
@@ -49,5 +52,7 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/posts/{postId}", handlers.GetPostByIDHandler(s)).Methods(http.MethodGet)
 	r.HandleFunc("/posts/{postId}", handlers.UpdatePostByIdHandler(s)).Methods(http.MethodPut)
 	r.HandleFunc("/posts/{postId}", handlers.DeletePostByIdHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/posts", handlers.ListPostHandler(s)).Methods(http.MethodGet)
 
+	r.HandleFunc("/ws", hub.HandleWebSocket)
 }
